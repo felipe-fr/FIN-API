@@ -11,6 +11,7 @@ app.use(express.json())
 app.get("/", (request,response) =>{
     response.send("Server is Working and It was started")
 })
+
 /**
  * cpf -> string -> receber na criação da conta
  * name -> string -> receber na criação da conta
@@ -24,7 +25,7 @@ app.post("/account", (request,response) =>{
     if (customerAlreadyExists){
         return response.status(400).json({error: "Customer Already Exists"})
     }
-    
+
     const customer = {
         name: name,
         cpf: cpf,
@@ -34,4 +35,10 @@ app.post("/account", (request,response) =>{
     customers.push(customer)
     return response.status(201).json(customer)
 
+})
+
+app.get("/statement/:cpf", (request,response) => {
+    const {cpf} = request.params
+    const customer = customers.find( customer => customer.cpf === cpf)
+    return response.json(customer.statement)
 })
