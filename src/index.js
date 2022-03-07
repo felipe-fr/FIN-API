@@ -40,5 +40,8 @@ app.post("/account", (request,response) =>{
 app.get("/statement/:cpf", (request,response) => {
     const {cpf} = request.params
     const customer = customers.find( customer => customer.cpf === cpf)
+    if (!customer) {
+        return response.status(400).json({error: "That customer does not exist"})
+    }
     return response.json(customer.statement)
 })
