@@ -12,7 +12,7 @@
 - [X] Deve ser possível obter dados da conta do cliente
 - [X] Deve ser possível atualizar nome da conta do cliente 
 - [X] Deve ser possível deletar uma conta
-- [] Deve ser possível buscar o extrato bancário do cliente por data 
+- [X] Deve ser possível buscar o extrato bancário do cliente por data 
 
 ### Regras de negócio 
 

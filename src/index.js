@@ -71,7 +71,6 @@ app.post("/account", (request,response) =>{
         statement: []
     }
     customers.push(customer)
-    console.log(customers)
     return response.status(201).json("criado com sucesso!")
 
 })
@@ -96,6 +95,15 @@ app.delete("/account", verifyIfExistsAccountCPF, (request,response) => {
 app.get("/statement", verifyIfExistsAccountCPF, (request,response) => {
     const {customer} = request
     return response.json(customer.statement)
+})
+
+app.get("/statement/date", verifyIfExistsAccountCPF, (request,response) => {
+    const {customer} = request
+    const {date} = request.query
+
+    const dateFormat = new Date( date + " 00:00")
+    const statement = customer.statement.filter((statement) => statement.created_at.toDateString() === new Date(dateFormat).toDateString())
+    return response.json(statement)
 })
 
 app.post("/deposit", verifyIfExistsAccountCPF, (request, response) =>{
