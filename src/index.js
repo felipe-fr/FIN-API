@@ -27,6 +27,19 @@ function verifyIfExistsAccountCPF(request, response, next){
 // app.use(verifyIfExistsAccountCPF) -> se eu quiser que todas as rotas abaixo do app.use() usem esse middleware
 //app.get("/statement/", verifyIfExistsAccountCPF, (request,response) quero que so essa rota use esse middleware
 
+function getBalance(statement){
+
+    const balance = statement.reduce((acc, operation) => {
+        if(operation.type === 'credit'){
+            return acc + operation.amount
+        }
+        else{
+            return acc - operation.amount
+        }
+    }, 0)
+    return balance
+}
+
 
 app.get("/", (request,response) =>{
     response.send("Server is Working and It was started")
@@ -52,11 +65,17 @@ app.post("/account", (request,response) =>{
         name: name,
         cpf: cpf,
         id: uuidv4(), 
+        balance: getBalance([]),
         statement: []
     }
     customers.push(customer)
     return response.status(201).json("criado com sucesso!")
 
+})
+
+app.get("/account", verifyIfExistsAccountCPF, (request,response) => {
+    const {customer} = request
+    return response.json(customer)
 })
 
 app.get("/statement", verifyIfExistsAccountCPF, (request,response) => {
@@ -75,5 +94,25 @@ app.post("/deposit", verifyIfExistsAccountCPF, (request, response) =>{
         type: "credit"
     }
     customer.statement.push(statementOperation)
+    customer.balance = getBalance(customer.statement)
     return response.status(201).json("deposito realizado com sucesso!")
+})
+
+app.post("/withdraw", verifyIfExistsAccountCPF, (request, response) =>{
+    const {description, amount} = request.body
+    const {customer} = request
+
+    const balance = getBalance(customer.statement)
+    if(balance < amount){
+        return response.status(400).json({error: "Saldo insuficiente!"})
+    }
+    const statementOperation = {
+        description: description,
+        amount: amount,
+        created_at: new Date(),
+        type: "Debit"
+    }
+    customer.statement.push(statementOperation)
+    customer.balance = getBalance(customer.statement)
+    return response.status(201).json("Retirada realizada com sucesso!")
 })
