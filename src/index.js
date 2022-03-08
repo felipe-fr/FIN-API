@@ -78,6 +78,12 @@ app.get("/account", verifyIfExistsAccountCPF, (request,response) => {
     return response.json(customer)
 })
 
+app.put("/account", verifyIfExistsAccountCPF, (request,response) => {
+    const {customer} = request
+    const {name} = request.body
+    customer.name = name
+    return response.status(201).json("Nome Atualizado com sucesso!!")
+})
 app.get("/statement", verifyIfExistsAccountCPF, (request,response) => {
     const {customer} = request
     return response.json(customer.statement)
