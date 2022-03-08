@@ -1,3 +1,4 @@
+const { request } = require("express")
 const express = require("express")
 const {v4: uuidv4} = require("uuid")
 const app = express()
@@ -54,12 +55,25 @@ app.post("/account", (request,response) =>{
         statement: []
     }
     customers.push(customer)
-    return response.status(201).json(customer)
+    return response.status(201).json("criado com sucesso!")
 
 })
 
-app.get("/statement/", verifyIfExistsAccountCPF, (request,response) => {
+app.get("/statement", verifyIfExistsAccountCPF, (request,response) => {
     const {customer} = request
     return response.json(customer.statement)
 })
 
+app.post("/deposit", verifyIfExistsAccountCPF, (request, response) =>{
+    const {description, amount} = request.body
+    const {customer} = request
+
+    const statementOperation = {
+        description: description,
+        amount: amount,
+        created_at: new Date(),
+        type: "credit"
+    }
+    customer.statement.push(statementOperation)
+    return response.status(201).json("deposito realizado com sucesso!")
+})
